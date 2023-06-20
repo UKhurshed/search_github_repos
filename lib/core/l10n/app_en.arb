@@ -9,5 +9,6 @@
   "sendTimeOutFailure": "Sending timeout in connection with the API server",
   "badRequestFailure": "The URL request was incorrectly assembled",
   "notFoundFailure": "Resource not found",
-  "somethingWentWrongFailure": "An error has occurred, try again!"
+  "somethingWentWrongFailure": "An error has occurred, try again!",
+  "internalServerError": "Internal server error"
 }
