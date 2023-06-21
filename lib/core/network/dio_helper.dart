@@ -17,7 +17,7 @@ class API {
 
   static Dio createDio() {
     var dio = Dio(BaseOptions(baseUrl: URL.base));
-    dio.interceptors.add(AppInterceptor());
+    // dio.interceptors.add(AppInterceptor());
     return dio;
   }
 }

@@ -10,5 +10,11 @@
   "badRequestFailure": "The URL request was incorrectly assembled",
   "notFoundFailure": "Resource not found",
   "somethingWentWrongFailure": "An error has occurred, try again!",
-  "internalServerError": "Internal server error"
+  "internalServerError": "Internal server error",
+  "textFieldHint": "Search repository",
+  "oupsError": "Oups, error!",
+  "close": "Close",
+  "search": "Search",
+  "requiredThreeCharacters": "Enter at least three characters",
+  "noDescription": "No description"
 }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:search_github_repos/core/route/route_names.dart';
-import 'package:search_github_repos/screens/splash/splash_screen.dart';
 import 'package:search_github_repos/screens/home/home_screen.dart';
+import 'package:search_github_repos/screens/repository_home_url/repository_home_url_screen.dart';
+import 'package:search_github_repos/screens/splash/splash_screen.dart';
 
 class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -22,5 +23,10 @@ class AppRouter {
             path: '/home',
             name: RouteNames.home,
             builder: (context, state) => const HomeScreen()),
+        GoRoute(
+            path: '/repository-html-url',
+            name: RouteNames.repositoryHtmlUrl,
+            builder: (context, state) => RepositoryHomeUrlScreen(
+                url: state.queryParameters['htmlUrl'] as String))
       ]);
 }
