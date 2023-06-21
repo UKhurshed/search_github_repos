@@ -25,7 +25,7 @@ class SearchRepositoriesBloc
     if (result.errorMessage != null) {
       emit(SearchRepositoriesFailure(errorMessage: result.errorMessage!));
     } else {
-      emit(SearchRepositoriesSuccess(repositoryItems: result.response.items));
+      emit(SearchRepositoriesSuccess(searchRepositoriesModel: result.response));
     }
   }
 

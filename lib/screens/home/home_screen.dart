@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:search_github_repos/core/extensions/screen_size.dart';
 import 'package:search_github_repos/core/route/app_route.dart';
@@ -44,7 +46,8 @@ class HomeScreen extends StatelessWidget {
                   return const Expanded(
                       child: Center(child: CircularProgressIndicator()));
                 } else if (state is SearchRepositoriesSuccess) {
-                  return ListOfRepositories(items: state.repositoryItems);
+                  return ListOfRepositories(
+                      searchRepositoriesModel: state.searchRepositoriesModel);
                 } else {
                   return Container();
                 }
@@ -58,9 +61,9 @@ class HomeScreen extends StatelessWidget {
 }
 
 class ListOfRepositories extends StatelessWidget {
-  final List<Item> items;
+  final SearchRepositoriesModel searchRepositoriesModel;
 
-  const ListOfRepositories({super.key, required this.items});
+  const ListOfRepositories({super.key, required this.searchRepositoriesModel});
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +72,8 @@ class ListOfRepositories extends StatelessWidget {
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
           itemBuilder: (context, index) {
-            final item = items[index];
-            if (items.isEmpty) {
+            final item = searchRepositoriesModel.items[index];
+            if (searchRepositoriesModel.items.isEmpty) {
               return const NoDataView();
             } else {
               return InkWell(
@@ -105,7 +108,7 @@ class ListOfRepositories extends StatelessWidget {
           separatorBuilder: (context, index) {
             return SizedBox(height: context.appHeight * 8.h);
           },
-          itemCount: items.length),
+          itemCount: searchRepositoriesModel.items.length),
     );
   }
 }
