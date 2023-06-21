@@ -1,13 +1,15 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:search_github_repos/core/extensions/screen_size.dart';
 import 'package:search_github_repos/core/route/app_route.dart';
 import 'package:search_github_repos/core/route/route_names.dart';
 import 'package:search_github_repos/screens/home/bloc/search_repositories/search_repositories_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:search_github_repos/screens/home/widgets/card_avatar.dart';
 import 'package:search_github_repos/screens/home/widgets/failure_dialog.dart';
+import 'package:search_github_repos/screens/home/widgets/name_and_description.dart';
 import 'package:search_github_repos/screens/home/widgets/no_data_view.dart';
 import 'package:search_github_repos/screens/home/widgets/search_textfield.dart';
+import 'package:search_github_repos/screens/home/widgets/stars_and_watchers.dart';
 
 import 'data/model/search_repositories_model.dart';
 
@@ -68,7 +70,6 @@ class ListOfRepositories extends StatelessWidget {
           shrinkWrap: true,
           itemBuilder: (context, index) {
             final item = items[index];
-            log('item avatar: ${item.owner?.avatarUrl}');
             if (items.isEmpty) {
               return const NoDataView();
             } else {
@@ -88,87 +89,12 @@ class ListOfRepositories extends StatelessWidget {
                     child: Row(
                       children: [
                         item.owner?.avatarUrl == null
-                            ? Container(
-                                width: context.appWidth * 42.w,
-                                height: context.appHeight * 42.h,
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: const Color(0xFF9FD6FD),
-                                        width: 1),
-                                    color: const Color(0xFFECF7FF)),
-                                child: const Center(
-                                    child: Icon(Icons.person_rounded)),
-                              )
-                            : Container(
-                                width: context.appWidth * 50.w,
-                                height: context.appHeight * 50.h,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                      color: const Color(0xFF9FD6FD),
-                                      width: 1.0),
-                                  color: const Color(0xFFECF7FF),
-                                  image: DecorationImage(
-                                      image: NetworkImage(
-                                          item.owner?.avatarUrl ?? ""),
-                                      fit: BoxFit.contain),
-                                )),
+                            ? const EmptyAvatar()
+                            : AvatarWithUrl(url: item.owner?.avatarUrl ?? ""),
                         SizedBox(width: context.appWidth * 10.w),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: context.appHeight * 8.h),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(item.fullName ?? "",
-                                    maxLines: 1,
-                                    style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold)),
-                                Text(item.description ?? "No description",
-                                    maxLines: 1,
-                                    style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.normal))
-                              ],
-                            ),
-                          ),
-                        ),
+                        NameAndDescription(item: item),
                         SizedBox(width: context.appWidth * 15.w),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: context.appHeight * 8.h),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Text('${item.stargazersCount ?? 0}',
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold)),
-                                  SizedBox(width: context.appWidth * 2.w),
-                                  const Icon(Icons.star,
-                                      color: Colors.black, size: 16)
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Text('${item.watchersCount ?? 0}',
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold)),
-                                  SizedBox(width: context.appWidth * 2.w),
-                                  const Icon(Icons.remove_red_eye,
-                                      color: Colors.black, size: 16)
-                                ],
-                              ),
-                            ],
-                          ),
-                        )
+                        StarsAndWatchers(item: item)
                       ],
                     ),
                   ),

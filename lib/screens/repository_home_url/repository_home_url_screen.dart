@@ -42,7 +42,6 @@ class _RepositoryHomeUrlScreenState extends State<RepositoryHomeUrlScreen> {
         }
       }
     });
-
     super.initState();
   }
 
