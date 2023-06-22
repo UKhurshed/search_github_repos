@@ -60,55 +60,89 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class ListOfRepositories extends StatelessWidget {
+class ListOfRepositories extends StatefulWidget {
   final SearchRepositoriesModel searchRepositoriesModel;
 
   const ListOfRepositories({super.key, required this.searchRepositoriesModel});
 
   @override
+  State<ListOfRepositories> createState() => _ListOfRepositoriesState();
+}
+
+class _ListOfRepositoriesState extends State<ListOfRepositories> {
+
+  List<Item> get itemList => widget.searchRepositoriesModel.items;
+
+  List<Item> currentList = [];
+
+  @override
+  void initState() {
+    currentList = itemList;
+    super.initState();
+  }
+
+  void _updateItem(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) {
+      newIndex -= 1;
+    }
+    final localItem = currentList.removeAt(oldIndex);
+    currentList.insert(newIndex, localItem);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: ListView.separated(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            final item = searchRepositoriesModel.items[index];
-            if (searchRepositoriesModel.items.isEmpty) {
-              return const NoDataView();
-            } else {
-              return InkWell(
-                onTap: () {
-                  AppRouter.router.pushNamed(RouteNames.repositoryHtmlUrl,
-                      queryParameters: {'htmlUrl': item.owner?.htmlUrl ?? ""});
-                },
-                child: Container(
-                  height: context.appHeight * 80.h,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade200)),
+      child: ReorderableListView(
+          onReorder: (int oldIndex, int newIndex) {
+            setState(() {
+              _updateItem(oldIndex, newIndex);
+            });
+          },
+          children: List.generate(
+            currentList.length,
+            (index) {
+              final item = currentList[index];
+              if (currentList.isEmpty) {
+                return const NoDataView();
+              } else {
+                return InkWell(
+                  key: ValueKey('search: ${item.id}'),
+                  onTap: () {
+                    AppRouter.router.pushNamed(RouteNames.repositoryHtmlUrl,
+                        queryParameters: {
+                          'htmlUrl': item.owner?.htmlUrl ?? ""
+                        });
+                  },
                   child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: context.appWidth * 10.w),
-                    child: Row(
-                      children: [
-                        item.owner?.avatarUrl == null
-                            ? const EmptyAvatar()
-                            : AvatarWithUrl(url: item.owner?.avatarUrl ?? ""),
-                        SizedBox(width: context.appWidth * 10.w),
-                        NameAndDescription(item: item),
-                        SizedBox(width: context.appWidth * 15.w),
-                        StarsAndWatchers(item: item)
-                      ],
+                    padding:
+                        EdgeInsets.symmetric(vertical: context.appHeight * 4.h),
+                    child: Container(
+                      height: context.appHeight * 80.h,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade400)),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: context.appWidth * 10.w),
+                        child: Row(
+                          children: [
+                            item.owner?.avatarUrl == null
+                                ? const EmptyAvatar()
+                                : AvatarWithUrl(
+                                    url: item.owner?.avatarUrl ?? ""),
+                            SizedBox(width: context.appWidth * 10.w),
+                            NameAndDescription(item: item),
+                            SizedBox(width: context.appWidth * 15.w),
+                            StarsAndWatchers(item: item)
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              );
-            }
-          },
-          separatorBuilder: (context, index) {
-            return SizedBox(height: context.appHeight * 8.h);
-          },
-          itemCount: searchRepositoriesModel.items.length),
+                );
+              }
+            },
+          )),
     );
   }
 }
