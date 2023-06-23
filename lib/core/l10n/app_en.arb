@@ -16,5 +16,6 @@
   "close": "Close",
   "search": "Search",
   "requiredThreeCharacters": "Enter at least three characters",
-  "noDescription": "No description"
+  "noDescription": "No description",
+  "sortBy": "SortBy"
 }

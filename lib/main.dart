@@ -24,6 +24,8 @@ class App extends StatelessWidget {
       child: MaterialApp.router(
         title: 'Search Github repos',
         locale: const Locale('ru', 'Ru'),
+        theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         routeInformationProvider: AppRouter.router.routeInformationProvider,

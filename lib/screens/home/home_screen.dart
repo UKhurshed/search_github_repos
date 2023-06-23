@@ -1,19 +1,20 @@
-import 'dart:developer';
-
+import 'package:drift_db_viewer/drift_db_viewer.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:search_github_repos/core/database/search_repos_database.dart';
 import 'package:search_github_repos/core/extensions/screen_size.dart';
 import 'package:search_github_repos/core/route/app_route.dart';
 import 'package:search_github_repos/core/route/route_names.dart';
 import 'package:search_github_repos/screens/home/bloc/search_repositories/search_repositories_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:search_github_repos/screens/home/data/repository/search_repositories.dart';
 import 'package:search_github_repos/screens/home/widgets/card_avatar.dart';
 import 'package:search_github_repos/screens/home/widgets/failure_dialog.dart';
 import 'package:search_github_repos/screens/home/widgets/name_and_description.dart';
 import 'package:search_github_repos/screens/home/widgets/no_data_view.dart';
 import 'package:search_github_repos/screens/home/widgets/search_textfield.dart';
 import 'package:search_github_repos/screens/home/widgets/stars_and_watchers.dart';
-
-import 'data/model/search_repositories_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -21,59 +22,110 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: context.appWidth * 8.w),
-        child: Column(
-          children: [
-            SizedBox(height: context.appHeight * 12.h),
-            const SearchTextField(),
-            SizedBox(height: context.appHeight * 20.h),
-            BlocConsumer<SearchRepositoriesBloc, SearchRepositoriesState>(
-              listener: (context, state) {
-                if (state is SearchRepositoriesFailure) {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext dlgContext) {
-                        return FailureDialog(errorMessage: state.errorMessage);
-                      });
-                }
-              },
-              builder: (context, state) {
-                if (state is SearchRepositoriesInitial) {
-                  return const NoDataView();
-                } else if (state is SearchRepositoriesProgress) {
-                  return const Expanded(
-                      child: Center(child: CircularProgressIndicator()));
-                } else if (state is SearchRepositoriesSuccess) {
-                  return ListOfRepositories(
-                      searchRepositoriesModel: state.searchRepositoriesModel);
-                } else {
-                  return Container();
-                }
-              },
-            )
+        appBar: AppBar(
+          title: Text(GetIt.I.get<AppLocalizations>().projectName,
+              style: const TextStyle(fontSize: 18)),
+          actions: [
+            InkWell(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          DriftDbViewer(GetIt.I.get<SearchReposDatabase>())));
+                },
+                child: const Icon(Icons.note))
           ],
         ),
-      ),
-    ));
+        body: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: context.appWidth * 8.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: context.appHeight * 12.h),
+                const SearchTextField(),
+                SizedBox(height: context.appHeight * 15.h),
+                Padding(
+                    padding: EdgeInsets.only(left: context.appWidth * 10.w),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            BlocProvider.of<SearchRepositoriesBloc>(context)
+                                .add(
+                                    const SortBy(searchSort: SearchSort.stars));
+                          },
+                          child: Row(
+                            children: [
+                              Text(GetIt.I.get<AppLocalizations>().sortBy,
+                                  style: const TextStyle(color: Colors.black)),
+                              SizedBox(width: context.appWidth * 5.w),
+                              const Icon(Icons.sort)
+                            ],
+                          ),
+                        ),
+                        InkWell(
+                            onTap: () {
+                              BlocProvider.of<SearchRepositoriesBloc>(context)
+                                  .add(const SortBy(
+                                      searchSort: SearchSort.watchers));
+                            },
+                            child: Row(
+                              children: [
+                                const Icon(Icons.remove_red_eye),
+                                SizedBox(width: context.appWidth * 7.w),
+                                Text(GetIt.I.get<AppLocalizations>().sortBy,
+                                    style:
+                                        const TextStyle(color: Colors.black)),
+                              ],
+                            )),
+                      ],
+                    )),
+                SizedBox(height: context.appHeight * 20.h),
+                BlocConsumer<SearchRepositoriesBloc, SearchRepositoriesState>(
+                  listener: (context, state) {
+                    if (state is SearchRepositoriesFailure) {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext dlgContext) {
+                            return FailureDialog(
+                                errorMessage: state.errorMessage);
+                          });
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is SearchRepositoriesInitial) {
+                      return const NoDataView();
+                    } else if (state is SearchRepositoriesProgress) {
+                      return const Expanded(
+                          child: Center(child: CircularProgressIndicator()));
+                    } else if (state is SearchRepositoriesSuccess) {
+                      return ListOfRepositories(listItem: state.listItem);
+                    } else {
+                      return Container();
+                    }
+                  },
+                )
+              ],
+            ),
+          ),
+        ));
   }
 }
 
 class ListOfRepositories extends StatefulWidget {
-  final SearchRepositoriesModel searchRepositoriesModel;
+  final List<ViewData> listItem;
 
-  const ListOfRepositories({super.key, required this.searchRepositoriesModel});
+  const ListOfRepositories({super.key, required this.listItem});
 
   @override
   State<ListOfRepositories> createState() => _ListOfRepositoriesState();
 }
 
 class _ListOfRepositoriesState extends State<ListOfRepositories> {
+  List<ViewData> get itemList => widget.listItem;
 
-  List<Item> get itemList => widget.searchRepositoriesModel.items;
-
-  List<Item> currentList = [];
+  List<ViewData> currentList = [];
 
   @override
   void initState() {
@@ -83,7 +135,7 @@ class _ListOfRepositoriesState extends State<ListOfRepositories> {
 
   void _updateItem(int oldIndex, int newIndex) {
     if (newIndex > oldIndex) {
-      newIndex -= 1;
+      newIndex--;
     }
     final localItem = currentList.removeAt(oldIndex);
     currentList.insert(newIndex, localItem);
@@ -93,6 +145,7 @@ class _ListOfRepositoriesState extends State<ListOfRepositories> {
   Widget build(BuildContext context) {
     return Expanded(
       child: ReorderableListView(
+          shrinkWrap: true,
           onReorder: (int oldIndex, int newIndex) {
             setState(() {
               _updateItem(oldIndex, newIndex);
@@ -109,9 +162,7 @@ class _ListOfRepositoriesState extends State<ListOfRepositories> {
                   key: ValueKey('search: ${item.id}'),
                   onTap: () {
                     AppRouter.router.pushNamed(RouteNames.repositoryHtmlUrl,
-                        queryParameters: {
-                          'htmlUrl': item.owner?.htmlUrl ?? ""
-                        });
+                        queryParameters: {'htmlUrl': item.htmlURL ?? ""});
                   },
                   child: Padding(
                     padding:
@@ -126,10 +177,9 @@ class _ListOfRepositoriesState extends State<ListOfRepositories> {
                             horizontal: context.appWidth * 10.w),
                         child: Row(
                           children: [
-                            item.owner?.avatarUrl == null
+                            item.avatarURL == null
                                 ? const EmptyAvatar()
-                                : AvatarWithUrl(
-                                    url: item.owner?.avatarUrl ?? ""),
+                                : AvatarWithUrl(url: item.avatarURL ?? ""),
                             SizedBox(width: context.appWidth * 10.w),
                             NameAndDescription(item: item),
                             SizedBox(width: context.appWidth * 15.w),

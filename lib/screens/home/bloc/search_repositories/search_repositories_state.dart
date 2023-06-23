@@ -8,9 +8,9 @@ class SearchRepositoriesInitial extends SearchRepositoriesState {}
 class SearchRepositoriesProgress extends SearchRepositoriesState {}
 
 class SearchRepositoriesSuccess extends SearchRepositoriesState {
-  final SearchRepositoriesModel searchRepositoriesModel;
+  final List<ViewData> listItem;
 
-  SearchRepositoriesSuccess({required this.searchRepositoriesModel});
+  SearchRepositoriesSuccess({required this.listItem});
 }
 
 class SearchRepositoriesFailure extends SearchRepositoriesState {

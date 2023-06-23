@@ -39,6 +39,14 @@ dependencies:
   go_router: ^8.0.5
   get_it: ^7.6.0
   flutter_inappwebview: ^5.7.2+3
+  sqlite3_flutter_libs: ^0.5.15
+  drift: ^2.9.0
+  path: ^1.8.3
+  path_provider: ^2.0.15
+  freezed: ^2.3.5
+  freezed_annotation: ^2.2.0
+  drift_db_viewer: ^2.0.0
+  bloc_concurrency: ^0.2.2
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -55,6 +63,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  drift_dev: ^2.9.0
+  build_runner: ^2.4.5
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

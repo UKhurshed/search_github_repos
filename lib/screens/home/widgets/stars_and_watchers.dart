@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:search_github_repos/core/extensions/screen_size.dart';
 import 'package:search_github_repos/screens/home/data/model/search_repositories_model.dart';
+import 'package:search_github_repos/screens/home/data/repository/search_repositories.dart';
 
 class StarsAndWatchers extends StatelessWidget {
-  final Item item;
+  final ViewData item;
 
   const StarsAndWatchers({super.key, required this.item});
 

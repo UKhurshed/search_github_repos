@@ -1,12 +1,28 @@
 part of 'search_repositories_bloc.dart';
 
-@immutable
-abstract class SearchRepositoriesEvent {}
+// @immutable
+// abstract class SearchRepositoriesEvent {}
+//
+// class SearchRepositoriesByQuery extends SearchRepositoriesEvent {
+//   final String query;
+//
+//   SearchRepositoriesByQuery({required this.query});
+// }
+//
+// class ClearState extends SearchRepositoriesEvent{}
 
-class SearchRepositoriesByQuery extends SearchRepositoriesEvent {
-  final String query;
+@freezed
+class SearchRepositoriesEvent with _$SearchRepositoriesEvent {
+  const factory SearchRepositoriesEvent.searchRepositoriesByQuery(
+      {required String query}) = SearchRepositoriesByQuery;
 
-  SearchRepositoriesByQuery({required this.query});
+  const factory SearchRepositoriesEvent.updateSearchReposList(
+      {required List<ViewData> list}) = UpdateSearchReposList;
+
+  const factory SearchRepositoriesEvent.sortBy(
+      {required SearchSort searchSort}) = SortBy;
+
+  const factory SearchRepositoriesEvent.clearState() = ClearState;
 }
 
-class ClearState extends SearchRepositoriesEvent{}
+enum SearchSort { stars, watchers }
